@@ -33,31 +33,40 @@ param_theme <- function(...) {
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Parameters"),
-
+    titlePanel(""),
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
-        sidebarPanel(width = 2, 
+        sidebarPanel(width = 3, 
+          withMathJax(),
+            p("$$y_i \\sim Normal(\\mu_i, \\sigma)$$"), 
+            p("$$\\mu_i = \\alpha + \\beta x_i$$"), 
+            br(), 
             sliderInput(
               inputId = "b_0",
               label = "Intercept",
-              min = -2, max = 2, value = 0, step = 0.1, ticks = F), 
+              min = -1.5, max = 1.5, value = 0, step = 0.1, ticks = F), 
           sliderInput(
               inputId = "b_1",
               label = "Slope",
-              min = -2, max = 2, value = 1, step = 0.1, ticks = F),
+              min = -1.5, max = 1.5, value = 0.5, step = 0.1, ticks = F),
             sliderInput(
               inputId = "sigma",
               label = "Sigma",
-              min = 0, max = 4, value = 2, step = 0.1, ticks = F),
+              min = 0.1, max = 2, value = 1, step = 0.1, ticks = F),
             sliderInput(
               inputId = "n",
               label = "N",
-              min = 50, max = 500, value = 100, step = 1, ticks = F)
+              min = 50, max = 500, value = 100, step = 1, ticks = F), 
+            br(), 
+            p(strong("Created by:"), 
+              tags$a("Joseph V. Casillas", href="https://www.jvcasillas.com"),
+            br(), 
+            strong("Source code:"), 
+              tags$a("Github", href="https://github.com/jvcasillas/shiny_parameters/"))
         ),
 
         # Show a plot of the generated distribution
-        mainPanel(width = 10, 
+        mainPanel(width = 9, br(), br(), br(), br(), 
            plotOutput("distPlot")
         )
     )
@@ -69,7 +78,7 @@ server <- function(input, output) {
     output$distPlot <- renderPlot({
         # generate data
         dat <- tibble(
-          x = rnorm(input$n, 0, 2), 
+          x = rnorm(input$n, 0, 1), 
           y = input$b_0 + x * input$b_1 + rnorm(input$n, 0, input$sigma)
         )
 
@@ -84,7 +93,7 @@ server <- function(input, output) {
             geom_point() + 
             geom_abline(intercept = coef(mod)[1], slope = coef(mod)[2], 
               color = "#cc0033", size = 1.2) + 
-            coord_cartesian(xlim = c(-5, 5), ylim = c(-5, 5)) + 
+            coord_cartesian(xlim = c(-2.5, 2.5), ylim = c(-2.5, 2.5)) + 
             labs(title = "Data space") + 
             param_theme(base_size = 16)
 
@@ -107,7 +116,7 @@ server <- function(input, output) {
             geom_hline(yintercept = 0, lty = 3) + 
             geom_errorbar(aes(ymin = ymin, ymax = ymax), width = 0.1) + 
             geom_errorbarh(aes(xmin = xmin, xmax = xmax), height = 0.1) + 
-            geom_point(size = 5, pch = 21, fill = "#cc0033", stroke = 1.2) + 
+            geom_point(size = 2 + input$sigma, pch = 21, fill = "#cc0033", stroke = 1.2) + 
             coord_cartesian(xlim = c(-2.5, 2.5), ylim = c(-2.5, 2.5)) + 
             scale_y_continuous(position = "right") + 
             labs(title = "Parameter space", y = "Intercept", x = "Slope") + 
