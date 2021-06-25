@@ -45,18 +45,18 @@ ui <- fluidPage(
               inputId = "b_0",
               label = "Intercept",
               min = -1.5, max = 1.5, value = 0, step = 0.1, ticks = F), 
-          sliderInput(
+            sliderInput(
               inputId = "b_1",
               label = "Slope",
               min = -1.5, max = 1.5, value = 0.5, step = 0.1, ticks = F),
-            sliderInput(
-              inputId = "sigma",
-              label = "Sigma",
-              min = 0.1, max = 2, value = 1, step = 0.1, ticks = F),
-            sliderInput(
-              inputId = "n",
-              label = "N",
-              min = 50, max = 500, value = 100, step = 1, ticks = F), 
+            #sliderInput(
+            #  inputId = "sigma",
+            #  label = "Sigma",
+            #  min = 0.1, max = 2, value = 1, step = 0.1, ticks = F),
+            #sliderInput(
+            #  inputId = "n",
+            #  label = "N",
+            #  min = 25, max = 500, value = 25, step = 1, ticks = F), 
             br(), 
             p(strong("Created by:"), 
               tags$a("Joseph V. Casillas", href="https://www.jvcasillas.com"),
@@ -66,7 +66,7 @@ ui <- fluidPage(
         ),
 
         # Show a plot of the generated distribution
-        mainPanel(width = 9, br(), br(), br(), br(), 
+        mainPanel(width = 9, br(), 
            plotOutput("distPlot")
         )
     )
@@ -77,22 +77,30 @@ server <- function(input, output) {
 
     output$distPlot <- renderPlot({
         # generate data
+        #dat <- tibble(
+        #  x = rnorm(input$n, 0, 1), 
+        #  y = input$b_0 + x * input$b_1 + rnorm(input$n, 0, input$sigma)
+        #)
+        set.seed(20210302)
         dat <- tibble(
-          x = rnorm(input$n, 0, 1), 
-          y = input$b_0 + x * input$b_1 + rnorm(input$n, 0, input$sigma)
+          x = rnorm(25, 0, 1), 
+          y = 0 + x * 0.5 + rnorm(25, 0, 1)
         )
 
         # Fit model
         mod <- lm(y ~ x, data = dat)
 
         # Data space plot
-        p1 <- dat %>% 
+        p1 <- augment(mod) %>% 
           ggplot(., aes(x = x, y = y)) + 
             geom_vline(xintercept = 0, lty = 3) + 
             geom_hline(yintercept = 0, lty = 3) + 
-            geom_point() + 
+            geom_point(aes(fill = .resid), pch = 21, size = 4, show.legend = F) + 
+            scale_fill_gradient2() + 
             geom_abline(intercept = coef(mod)[1], slope = coef(mod)[2], 
               color = "#cc0033", size = 1.2) + 
+            geom_abline(intercept = input$b_0, slope = input$b_1, 
+              color = "grey", size = 1.2) + 
             coord_cartesian(xlim = c(-2.5, 2.5), ylim = c(-2.5, 2.5)) + 
             labs(title = "Data space") + 
             param_theme(base_size = 16)
@@ -122,8 +130,16 @@ server <- function(input, output) {
             labs(title = "Parameter space", y = "Intercept", x = "Slope") + 
             param_theme(base_size = 16)
 
+        p3 <- ggplot(data = tibble(x = input$b_1, y = input$b_0)) + 
+          aes(x = x, y = y) + 
+          geom_point(size = 8, color = "#cc0033") + 
+          coord_cartesian(xlim = c(-2.5, 2.5), ylim = c(-2.5, 2.5)) + 
+          scale_y_continuous(position = "right") + 
+          labs(title = "Parameter space", y = "Intercept", x = "Slope") + 
+          param_theme(base_size = 16)
+
         # Print plots together
-        p1 + p2
+        p1 + p3
     })
 }
 
