@@ -33,7 +33,7 @@ param_theme <- function(...) {
 ui <- fluidPage(
 
     # Application title
-    titlePanel(""),
+    titlePanel("Exploring parameter space", windowTitle = "Parameter space"),
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(width = 3, 
