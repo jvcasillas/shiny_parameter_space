@@ -82,11 +82,14 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
+    n <- 25
+    x <- rnorm(n, 0, 1)
+    
     output$distPlot <- renderPlot({
         # generate data
         dat <- tibble(
-          x = rnorm(25, 0, 1), 
-          y = 0 + x * 0.5 + rnorm(25, 0, 1)
+          x = x, 
+          y = input$b_0 + (x * input$b_1) + rnorm(n, 0, 1)
         )
 
         # Fit model
