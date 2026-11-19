@@ -19,6 +19,7 @@ library("patchwork")
 library("bslib")
 
 # shinylive::export("app", "docs")
+# usethis::use_github_action(url="https://github.com/posit-dev/r-shinylive/blob/actions-v1/examples/deploy-app.yaml")
 
 theme <- bs_theme(
   # Controls the default grayscale palette
@@ -107,7 +108,8 @@ server <- function(input, output) {
             color = "#cc0033", linewidth = 1.2) + 
           coord_cartesian(xlim = c(-2.5, 2.5), ylim = c(-2.5, 2.5)) + 
           labs(title = "Data space") + 
-          param_theme(base_size = 16)
+          param_theme(base_size = 16) + 
+          NULL
 
         # Parameter space plot
         p2 <- ggplot(data = tibble(x = input$b_1, y = input$b_0)) + 
@@ -118,7 +120,8 @@ server <- function(input, output) {
           coord_cartesian(xlim = c(-2.5, 2.5), ylim = c(-2.5, 2.5)) + 
           scale_y_continuous(position = "right") + 
           labs(title = "Parameter space", y = "Intercept", x = "Slope") + 
-          param_theme(base_size = 16)
+          param_theme(base_size = 16) + 
+          NULL
 
         # Print plots together
         p1 + p2
