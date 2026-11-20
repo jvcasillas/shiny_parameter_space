@@ -70,7 +70,7 @@ ui <- fluidPage(
               tags$a("Joseph V. Casillas", href="https://www.jvcasillas.com"),
             br(), 
             strong("Source code:"), 
-              tags$a("Github", href="https://github.com/jvcasillas/shiny_parameters/"))
+              tags$a("Github", href="https://github.com/jvcasillas/shiny_parameter_space/"))
         ),
 
         # Show a plot of the generated distribution
